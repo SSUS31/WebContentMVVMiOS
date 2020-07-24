@@ -12,20 +12,19 @@ final class NetworkManager {
     static let shared = NetworkManager()
     private init (){}
 
-    func getString(from urlString:String,_ completion: @escaping (String)->()) {
+    func getString(from urlString:String,_ completion: @escaping (NSAttributedString)->()) {
         guard let url = URL(string: urlString) else { return }
         let urlRequest = URLRequest(url: url)
         let session = URLSession.shared
         session.dataTask(with: urlRequest) { (data, response, error) in
             if let data = data, error == nil {
                 if let content = String(data: data, encoding: .utf8) {
-                    let _string = content.htmlToString
+                    let _string = content.htmlToAttributedString
 
-                    completion(_string)
+                    completion(_string ?? NSAttributedString())
                 }
             } else {
                 print("Something wrong")
-                completion("xxxxx")
             }
         }.resume()
     }

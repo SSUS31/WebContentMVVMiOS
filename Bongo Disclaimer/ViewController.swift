@@ -14,24 +14,32 @@ class ViewController: UIViewController {
     var status = (onInitialLoad: true , showWebContent: true)
 
     lazy var button:UIButton = {
+        let font = UIFont(name: "Chalkduster", size: 20)
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle(NSLocalizedString("LOAD_BUTTON_TITLE", comment: ""), for: .normal)
-        button.backgroundColor = #colorLiteral(red: 0.7450980544, green: 0.1568627506, blue: 0.07450980693, alpha: 1)
+        button.titleLabel?.font = font
+        button.backgroundColor = #colorLiteral(red: 0.1294117647, green: 0.1294117647, blue: 0.1411764706, alpha: 0.5)
         button.setTitleColor(#colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0), for: .normal)
         button.showsTouchWhenHighlighted = true
         button.addTarget(self, action: #selector(self.loadButtonAction), for: .touchUpInside)
-        button.layer.cornerRadius = 30
+        button.layer.cornerRadius = 5
+        button.layer.shadowColor = #colorLiteral(red: 0.1294117647, green: 0.1294117647, blue: 0.1411764706, alpha: 1)
+        button.layer.shadowOpacity = 0.9
+        button.layer.shadowRadius = 10
         return button
     }()
 
     lazy var textViewContainer:UIView = {
         let view = UIView()
+        view.alpha = 0
+        view.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
         view.translatesAutoresizingMaskIntoConstraints = false
         view.layer.cornerRadius = 30
-        view.layer.shadowColor = UIColor.gray.cgColor
-        view.layer.shadowRadius = 8
-        view.layer.shadowOpacity = 0.9
+        view.layer.shadowColor = #colorLiteral(red: 0.1294117647, green: 0.1294117647, blue: 0.1411764706, alpha: 0.9039223031)
+        view.layer.shadowRadius = 12
+        view.layer.shadowOffset = CGSize(width: 0, height: -16)
+        view.layer.shadowOpacity = 0.4
         view.clipsToBounds = false
 
         view.addSubview(self.textView)
@@ -47,7 +55,7 @@ class ViewController: UIViewController {
     let textView:UITextView = {
         let textView = UITextView()
         textView.translatesAutoresizingMaskIntoConstraints = false
-        textView.backgroundColor = #colorLiteral(red: 0.8039215803, green: 0.8039215803, blue: 0.8039215803, alpha: 1)
+        textView.backgroundColor = #colorLiteral(red: 0.9803921569, green: 0.9803921569, blue: 0.9803921569, alpha: 1)
         textView.isEditable = false
         textView.layer.cornerRadius = 30
         return textView
@@ -64,6 +72,25 @@ class ViewController: UIViewController {
         showResponseOnTextView()
     }
 
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+
+        UIView.animate(withDuration: 1.2, delay: 0.3, usingSpringWithDamping: 0.5, initialSpringVelocity: 5, options: .curveEaseInOut, animations: {
+            self.textViewContainer.alpha = 1
+            self.textViewContainer.transform = .identity
+
+        }, completion: { success in
+            if success {
+                UIView.animate(withDuration: 0.3) {
+                    self.button.layer.cornerRadius = 25
+                    self.button.backgroundColor = #colorLiteral(red: 0.1294117647, green: 0.1294117647, blue: 0.1411764706, alpha: 1)
+                }
+            }
+        })
+
+
+    }
+
     //MARK:- Setup Views
     fileprivate func setupViews() {
         view.addSubview(button)
@@ -71,12 +98,12 @@ class ViewController: UIViewController {
 
         NSLayoutConstraint.activate([
             //Constraints for Button
-            button.heightAnchor.constraint(equalToConstant: 60),
+            button.heightAnchor.constraint(equalToConstant: 50),
             button.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
             button.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
-            button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
+            button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -12),
             //Constraints for TextView
-            textViewContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            textViewContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 25),
             textViewContainer.leftAnchor.constraint(equalTo: button.leftAnchor),
             textViewContainer.rightAnchor.constraint(equalTo: button.rightAnchor),
             textViewContainer.bottomAnchor.constraint(equalTo: button.topAnchor, constant: -20)
@@ -121,7 +148,7 @@ class ViewController: UIViewController {
             guard let self = self else { return }
             if self.status.onInitialLoad || !self.status.showWebContent { return }
             DispatchQueue.main.async {
-                self.textView.text = content
+                self.textView.attributedText = content
             }
         }
     }

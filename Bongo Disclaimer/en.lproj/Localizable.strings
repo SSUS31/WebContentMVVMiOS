@@ -6,4 +6,5 @@
   Copyright © 2020 Sahad. All rights reserved.
 */
 //Button Title
-"LOAD_BUTTON_TITLE" = "Show Result";
+"LOAD_BUTTON_TITLE_RESULT" = "Show Result";
+"LOAD_BUTTON_TITLE_RESPONSE" = "Show Response";
