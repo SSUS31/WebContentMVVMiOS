@@ -1,0 +1,9 @@
+/* 
+  Localizable.strings
+  Bongo Disclaimer
+
+  Created by Sahad on 24/7/20.
+  Copyright © 2020 Sahad. All rights reserved.
+*/
+//Button Title
+"LOAD_BUTTON_TITLE" = "Show Result";
