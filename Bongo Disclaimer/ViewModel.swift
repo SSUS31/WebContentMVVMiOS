@@ -9,18 +9,20 @@
 import Foundation
 protocol ViewModelDelegate {
 //    func fetchDataFromWebURL(urlString: String,completion:@escaping (String)->Void)
-    var lastCharacter:(Character) -> Void { get set }
+    var lastCharacterAndEvery10thCharacters:(Character,String) -> Void { get set }
     var wordCountsInString:(String) -> Void { get set }
+    var allResponseFromWebUrl:(String) -> Void { get set }
     /**
     This function will fetch data from web url
     - parameter urlString:The link where to grab data
     */
-    func fetchWebContent(_ urlString:String?)
+    func fetchWebContent(_ urlString:String, _ onlyResult:Bool)
 }
 
 struct ViewModel:ViewModelDelegate {
+    var allResponseFromWebUrl: (String) -> Void = { _ in }
+    var lastCharacterAndEvery10thCharacters: (Character, String) -> Void = { _,_ in }
     var wordCountsInString: (String) -> Void = { _ in }
-    var lastCharacter: (Character) -> Void = { _ in }
 
     ///Singleton NetworkManger to handle network related operations
     let networkManager = NetworkManager.shared
@@ -30,32 +32,28 @@ struct ViewModel:ViewModelDelegate {
 
     init() {}
 
-
-    func fetchDataFromWebURL(urlString: String,completion:@escaping (String)->Void) {
-        networkManager.getString(from: urlString) { (content) in
-            let str = content.components(separatedBy: .whitespaces)
-//            guard let self = self else { return }
-//            print(str)
-            print(content.last)
-            completion(content)
-
-        }
-    }
-
     /**
     This function will fetch data from web url
     - parameter urlString:The link where to grab data
     */
-    func fetchWebContent(_ urlString: String?) {
-        let url = urlString ?? webUrl
+    func fetchWebContent(_ urlString: String = "", _ onlyResult:Bool = false) {
+        let url = urlString.isEmpty ? webUrl : urlString
 
         networkManager.getString(from: url) {(content) in
-
-            if let lastCharacter = content.last {
-                self.lastCharacter(lastCharacter)
+            if onlyResult {
+                self.allResponseFromWebUrl(content)
+                return
             }
-
-            DispatchQueue.global().async {
+            if let lastCharacter = content.last {
+                //MARK:- Printing  the last character.
+                print(lastCharacter)
+                let every10thCharacters = self.getEveryCharacters(at: 10, for: content)
+                //MARK:- Printing every 10th character separated by space
+                print(every10thCharacters)
+                self.lastCharacterAndEvery10thCharacters(lastCharacter,every10thCharacters)
+                self.allResponseFromWebUrl(content)
+            }
+            DispatchQueue.global(qos: .background).async {
                 self.wordCounts(_string: content)
             }
 
@@ -74,6 +72,14 @@ struct ViewModel:ViewModelDelegate {
             }
 
         }
+         //MARK:- Printing  the count of every word.
+        print(wordCounts)
         wordCountsInString(wordCounts)
+    }
+
+    func getEveryCharacters(at position: Int, for string: String) -> String {
+        let _position = position + 1
+
+        return string.everyCharcters(at: _position)
     }
 }

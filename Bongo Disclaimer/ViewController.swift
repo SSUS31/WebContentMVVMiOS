@@ -11,6 +11,7 @@ import WebKit
 
 class ViewController: UIViewController {
     var viewModel:ViewModelDelegate!
+    var status = (onInitialLoad: true , showWebContent: true)
 
     lazy var button:UIButton = {
         let button = UIButton(type: .system)
@@ -22,6 +23,25 @@ class ViewController: UIViewController {
         button.addTarget(self, action: #selector(self.loadButtonAction), for: .touchUpInside)
         button.layer.cornerRadius = 30
         return button
+    }()
+
+    lazy var textViewContainer:UIView = {
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.cornerRadius = 30
+        view.layer.shadowColor = UIColor.gray.cgColor
+        view.layer.shadowRadius = 8
+        view.layer.shadowOpacity = 0.9
+        view.clipsToBounds = false
+
+        view.addSubview(self.textView)
+        NSLayoutConstraint.activate([
+            textView.topAnchor.constraint(equalTo: view.topAnchor),
+            textView.leftAnchor.constraint(equalTo: view.leftAnchor),
+            textView.rightAnchor.constraint(equalTo: view.rightAnchor),
+            textView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
+        return view
     }()
 
     let textView:UITextView = {
@@ -37,16 +57,18 @@ class ViewController: UIViewController {
     //MARK:- LifeCycle methods
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        setupViews()
         viewModel = ViewModel()
-        updateFirstCharacter()
+        setupViews()
+        viewModel.fetchWebContent("", false)
+//        showPrintedResultsOnTextView()
+        showResponseOnTextView()
     }
 
     //MARK:- Setup Views
     fileprivate func setupViews() {
         view.addSubview(button)
-        view.addSubview(textView)
+        view.addSubview(textViewContainer)
+
         NSLayoutConstraint.activate([
             //Constraints for Button
             button.heightAnchor.constraint(equalToConstant: 60),
@@ -54,10 +76,10 @@ class ViewController: UIViewController {
             button.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
             button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -20),
             //Constraints for TextView
-            textView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            textView.leftAnchor.constraint(equalTo: button.leftAnchor),
-            textView.rightAnchor.constraint(equalTo: button.rightAnchor),
-            textView.bottomAnchor.constraint(equalTo: button.topAnchor, constant: -20)
+            textViewContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
+            textViewContainer.leftAnchor.constraint(equalTo: button.leftAnchor),
+            textViewContainer.rightAnchor.constraint(equalTo: button.rightAnchor),
+            textViewContainer.bottomAnchor.constraint(equalTo: button.topAnchor, constant: -20)
         ])
     }
 
@@ -69,24 +91,37 @@ class ViewController: UIViewController {
     }
 
     @objc fileprivate func fetchWebData(){
+        status.onInitialLoad = false
         let webUrl = "https://www.bioscopelive.com/en/disclaimer"
-        print(webUrl)
-        viewModel.fetchWebContent(webUrl)
+        viewModel.fetchWebContent(webUrl, true)
     }
 
-    fileprivate func updateFirstCharacter(){
-        viewModel.lastCharacter = { lastCharacter in
+    fileprivate func showPrintedResultsOnTextView(){
+        status.showWebContent = false
+        viewModel.lastCharacterAndEvery10thCharacters = { lastCharacter, every10thCharacters in
             DispatchQueue.main.async {
-                let updatedString = "1:\n \(lastCharacter)" + self.textView.text
-                self.textView.text = updatedString
+                let answerOne = "Question 1 Solution:\n \(lastCharacter)"
+                let answerTwo = "\n Question 2 Solution:\n \(every10thCharacters)"
+
+                self.textView.text = answerOne + answerTwo
             }
         }
 
         viewModel.wordCountsInString = { wordCounts in
-
             DispatchQueue.main.async {
-                let updatedString = self.textView.text + "2:\n \(wordCounts)"
+                let answerThree = "\n Question 3 Solution:\n \(wordCounts)"
+                let updatedString = self.textView.text + answerThree
                 self.textView.text = updatedString
+            }
+        }
+    }
+
+    func showResponseOnTextView() {
+        viewModel.allResponseFromWebUrl = {[weak self] content in
+            guard let self = self else { return }
+            if self.status.onInitialLoad || !self.status.showWebContent { return }
+            DispatchQueue.main.async {
+                self.textView.text = content
             }
         }
     }

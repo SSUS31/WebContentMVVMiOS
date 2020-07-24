@@ -28,6 +28,5 @@ final class NetworkManager {
                 completion("xxxxx")
             }
         }.resume()
-
     }
 }

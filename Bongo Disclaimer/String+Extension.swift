@@ -20,4 +20,22 @@ extension String {
     var htmlToString: String {
         return htmlToAttributedString?.string ?? ""
     }
+
+    subscript(i: Int) -> String {
+        return String(self[index(startIndex, offsetBy: i)])
+    }
+
+    func everyCharcters(at number:Int) -> String {
+        var characters = ""
+        let count = Array(self).count
+
+
+        for position in stride(from: number-1, through: count, by: number) {
+            if position < count {
+                characters.append(" \(self[position])")
+            }
+        }
+
+        return characters
+    }
 }
