@@ -16,7 +16,7 @@ class ViewController: UIViewController {
     var dataSource = (onInitialLoad: true , response: NSAttributedString() , result: String())
 
     lazy var button:UIButton = {
-        let font = UIFont(name: "Chalkduster", size: 20)
+        let font = UIFont(name: "Chalkduster", size: constants.size_20)
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitle(NSLocalizedString("LOAD_BUTTON_TITLE_RESPONSE", comment: ""), for: .normal)
@@ -28,7 +28,7 @@ class ViewController: UIViewController {
         button.layer.cornerRadius = 5
         button.layer.shadowColor = #colorLiteral(red: 0.1294117647, green: 0.1294117647, blue: 0.1411764706, alpha: 1)
         button.layer.shadowOpacity = 0.9
-        button.layer.shadowRadius = 10
+        button.layer.shadowRadius = constants.size_10
         button.tag = 1
         return button
     }()
@@ -38,10 +38,10 @@ class ViewController: UIViewController {
         view.alpha = 0
         view.transform = CGAffineTransform(scaleX: 0.1, y: 0.1)
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.layer.cornerRadius = 30
+        view.layer.cornerRadius = constants.size_30
         view.layer.shadowColor = #colorLiteral(red: 0.1294117647, green: 0.1294117647, blue: 0.1411764706, alpha: 0.9039223031)
-        view.layer.shadowRadius = 12
-        view.layer.shadowOffset = CGSize(width: 0, height: -16)
+        view.layer.shadowRadius = constants.size_12
+        view.layer.shadowOffset = CGSize(width: 0, height: -constants.size_16)
         view.layer.shadowOpacity = 0.4
         view.clipsToBounds = false
 
@@ -60,8 +60,8 @@ class ViewController: UIViewController {
         textView.translatesAutoresizingMaskIntoConstraints = false
         textView.backgroundColor = #colorLiteral(red: 0.9803921569, green: 0.9803921569, blue: 0.9803921569, alpha: 1)
         textView.isEditable = false
-        textView.layer.cornerRadius = 30
-        textView.textContainerInset.top = 20
+        textView.layer.cornerRadius = constants.size_30
+        textView.textContainerInset.top = constants.size_20
         return textView
     }()
 
@@ -69,10 +69,12 @@ class ViewController: UIViewController {
     //MARK:- LifeCycle methods
     override func viewDidLoad() {
         super.viewDidLoad()
+
         viewModel = ViewModel()
+
         setupViews()
-//        viewModel.fetchWebContent("", false)
         fetchWebData()
+
         showPrintedResultsOnTextView()
         showResponseOnTextView()
     }
@@ -90,15 +92,15 @@ class ViewController: UIViewController {
 
         NSLayoutConstraint.activate([
             //Constraints for Button
-            button.heightAnchor.constraint(equalToConstant: 50),
-            button.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
-            button.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
-            button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -12),
+            button.heightAnchor.constraint(equalToConstant: constants.size_50),
+            button.leftAnchor.constraint(equalTo: view.leftAnchor, constant: constants.size_20),
+            button.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -constants.size_20),
+            button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -constants.size_12),
             //Constraints for TextViewContainer
-            textViewContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 25),
+            textViewContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: constants.size_25),
             textViewContainer.leftAnchor.constraint(equalTo: button.leftAnchor),
             textViewContainer.rightAnchor.constraint(equalTo: button.rightAnchor),
-            textViewContainer.bottomAnchor.constraint(equalTo: button.topAnchor, constant: -20)
+            textViewContainer.bottomAnchor.constraint(equalTo: button.topAnchor, constant: -constants.size_20)
         ])
     }
 
@@ -111,7 +113,7 @@ class ViewController: UIViewController {
         }, completion: { success in
             if success {
                 UIView.animate(withDuration: 0.3) {
-                    self.button.layer.cornerRadius = 25
+                    self.button.layer.cornerRadius = constants.size_25
                     self.button.backgroundColor = #colorLiteral(red: 0.1294117647, green: 0.1294117647, blue: 0.1411764706, alpha: 1)
                 }
             }
@@ -122,7 +124,7 @@ class ViewController: UIViewController {
     //MARK: Button Action
     @objc fileprivate func loadButtonAction(){
         if self.button.tag == 1 {
-            self.textView.attributedText = dataSource.response
+            self.textView.attributedText = NSAttributedString(string: "Loading ...")
         } else {
             self.textView.text = dataSource.result
             toggleButtonTitle()
@@ -178,7 +180,7 @@ class ViewController: UIViewController {
             guard let self = self else { return }
 
             DispatchQueue.main.async {
-                self.dataSource.response = content
+//                self.dataSource.response = content
                 self.textView.attributedText = content
 
                 self.toggleButtonTitle()
