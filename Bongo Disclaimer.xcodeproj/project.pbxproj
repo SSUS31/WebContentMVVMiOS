@@ -13,8 +13,8 @@
 		11510E7424C9E9B700F538C1 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 11510E7224C9E9B700F538C1 /* Main.storyboard */; };
 		11510E7624C9E9BC00F538C1 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 11510E7524C9E9BC00F538C1 /* Assets.xcassets */; };
 		11510E7924C9E9BC00F538C1 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 11510E7724C9E9BC00F538C1 /* LaunchScreen.storyboard */; };
-		11510E8424C9E9BD00F538C1 /* Bongo_DisclaimerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11510E8324C9E9BD00F538C1 /* Bongo_DisclaimerTests.swift */; };
 		11510E8F24C9EF4300F538C1 /* NetworkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11510E8E24C9EF4300F538C1 /* NetworkManager.swift */; };
+		11522FF824CC75A50041EAB8 /* ViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 11522FF724CC75A50041EAB8 /* ViewModelTests.swift */; };
 		1175676824CAD9F6001E0FC9 /* ViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1175676724CAD9F6001E0FC9 /* ViewModel.swift */; };
 		1175677024CAEE06001E0FC9 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1175677224CAEE06001E0FC9 /* Localizable.strings */; };
 		1175677424CAF0A3001E0FC9 /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1175677324CAF0A3001E0FC9 /* String+Extension.swift */; };
@@ -40,9 +40,9 @@
 		11510E7824C9E9BC00F538C1 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		11510E7A24C9E9BC00F538C1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		11510E7F24C9E9BD00F538C1 /* Bongo DisclaimerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Bongo DisclaimerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		11510E8324C9E9BD00F538C1 /* Bongo_DisclaimerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Bongo_DisclaimerTests.swift; sourceTree = "<group>"; };
 		11510E8524C9E9BD00F538C1 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		11510E8E24C9EF4300F538C1 /* NetworkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkManager.swift; sourceTree = "<group>"; };
+		11522FF724CC75A50041EAB8 /* ViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModelTests.swift; sourceTree = "<group>"; };
 		1175676724CAD9F6001E0FC9 /* ViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModel.swift; sourceTree = "<group>"; };
 		1175677124CAEE06001E0FC9 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/Localizable.strings; sourceTree = "<group>"; };
 		1175677324CAF0A3001E0FC9 /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
@@ -105,8 +105,8 @@
 		11510E8224C9E9BD00F538C1 /* Bongo DisclaimerTests */ = {
 			isa = PBXGroup;
 			children = (
-				11510E8324C9E9BD00F538C1 /* Bongo_DisclaimerTests.swift */,
 				11510E8524C9E9BD00F538C1 /* Info.plist */,
+				11522FF724CC75A50041EAB8 /* ViewModelTests.swift */,
 			);
 			path = "Bongo DisclaimerTests";
 			sourceTree = "<group>";
@@ -164,6 +164,7 @@
 					};
 					11510E7E24C9E9BD00F538C1 = {
 						CreatedOnToolsVersion = 11.5;
+						LastSwiftMigration = 1150;
 						TestTargetID = 11510E6824C9E9B700F538C1;
 					};
 				};
@@ -226,7 +227,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				11510E8424C9E9BD00F538C1 /* Bongo_DisclaimerTests.swift in Sources */,
+				11522FF824CC75A50041EAB8 /* ViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -425,6 +426,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = RRN64FYCM8;
 				INFOPLIST_FILE = "Bongo DisclaimerTests/Info.plist";
@@ -436,6 +438,7 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "com.sahad.bd.Bongo-DisclaimerTests";
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Bongo Disclaimer.app/Bongo Disclaimer";
@@ -447,6 +450,7 @@
 			buildSettings = {
 				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = RRN64FYCM8;
 				INFOPLIST_FILE = "Bongo DisclaimerTests/Info.plist";

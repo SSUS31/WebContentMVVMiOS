@@ -32,7 +32,9 @@ extension String {
 
         for position in stride(from: number-1, through: count, by: number) {
             if position < count {
-                characters.append(" \(self[position])")
+                let value = characters.count > 0 ? " \(self[position])" : "\(self[position])"
+
+                characters.append(value)
             }
         }
 

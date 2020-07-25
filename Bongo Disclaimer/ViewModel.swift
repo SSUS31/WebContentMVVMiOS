@@ -32,6 +32,17 @@ class ViewModel:ViewModelDelegate {
 
     init() {}
 
+    func getLastCharacterAndEveryNthCharacters(_ stringValue: String) {
+        if let lastCharacter = stringValue.last {
+            //MARK:- Printing  the last character.
+            print(lastCharacter)
+            let every10thCharacters = self.getEveryCharacters(at: 10, for: stringValue)
+            //MARK:- Printing every 10th character separated by space
+            print(every10thCharacters)
+            self.lastCharacterAndEvery10thCharacters(lastCharacter,every10thCharacters)
+        }
+    }
+
     /**
     This function will fetch data from web url
     - parameter urlString:The link where to grab data
@@ -46,15 +57,8 @@ class ViewModel:ViewModelDelegate {
             }
             let stringValue = content.string
 
-            if let lastCharacter = stringValue.last {
-                //MARK:- Printing  the last character.
-                print(lastCharacter)
-                let every10thCharacters = self.getEveryCharacters(at: 10, for: stringValue)
-                //MARK:- Printing every 10th character separated by space
-                print(every10thCharacters)
-                self.lastCharacterAndEvery10thCharacters(lastCharacter,every10thCharacters)
-//                self.allResponseFromWebUrl(content)
-            }
+            self.getLastCharacterAndEveryNthCharacters(stringValue)
+
             DispatchQueue.global(qos: .background).async {
                 self.wordCounts(_string: stringValue)
             }
@@ -62,23 +66,30 @@ class ViewModel:ViewModelDelegate {
         }
     }
 
+    /**
+    This function calculates every word count of a string. Provide the result in string format seperated by space.
+    - parameter _string: The string for every word count
+    */
     func wordCounts(_string: String) {
         let chararacterSet = CharacterSet.whitespacesAndNewlines.union(.punctuationCharacters)
         let components = _string.components(separatedBy: chararacterSet)
         let words = components.filter { !$0.isEmpty }
         var wordCounts = ""
 
-        for word in words {
-            if word.count > 0 {
-                wordCounts += " \(word.count)"
-            }
+        for (index,word) in words.enumerated() {
+            wordCounts += (index == 0 ? "\(word.count)" : " \(word.count)")
         }
          //MARK:- Printing  the count of every word.
         print(wordCounts)
         wordCountsInString(wordCounts)
     }
 
-    func getEveryCharacters(at position: Int, for string: String) -> String {
+    /**
+    This function will return every Nth character separated by space
+    - parameter position:The Nth position of provided string . Position starts with 0.
+    - parameter string: The string where to find Nth characters
+    */
+    func getEveryCharacters(at position: Int, for string: String) -> String {//Position starts with 0
         let _position = position + 1
 
         return string.everyCharcters(at: _position)
