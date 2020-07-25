@@ -19,7 +19,7 @@ class ViewController: UIViewController {
         let font = UIFont(name: "Chalkduster", size: constants.size_20)
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle(NSLocalizedString("LOAD_BUTTON_TITLE_RESPONSE", comment: ""), for: .normal)
+        button.setTitle(NSLocalizedString("PLEASE_WAIT", comment: ""), for: .normal)
         button.titleLabel?.font = font
         button.backgroundColor = #colorLiteral(red: 0.1294117647, green: 0.1294117647, blue: 0.1411764706, alpha: 0.5)
         button.setTitleColor(#colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0), for: .normal)
@@ -30,6 +30,7 @@ class ViewController: UIViewController {
         button.layer.shadowOpacity = 0.9
         button.layer.shadowRadius = constants.size_10
         button.tag = 1
+        button.isUserInteractionEnabled = false
         return button
     }()
 
@@ -162,6 +163,9 @@ class ViewController: UIViewController {
                 let updatedString = self.dataSource.result + answerThree
 
                 self.dataSource.result = updatedString
+
+                self.button.isUserInteractionEnabled = true
+                self.button.setTitle(NSLocalizedString("LOAD_BUTTON_TITLE_RESPONSE", comment: ""), for: .normal)
             }
         }
     }
