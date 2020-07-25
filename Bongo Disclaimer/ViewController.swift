@@ -10,14 +10,16 @@ import UIKit
 import WebKit
 
 class ViewController: UIViewController {
+
     var viewModel:ViewModelDelegate!
-    var status = (onInitialLoad: true , showWebContent: true)
+    ///Saving data locally
+    var dataSource = (onInitialLoad: true , response: NSAttributedString() , result: String())
 
     lazy var button:UIButton = {
         let font = UIFont(name: "Chalkduster", size: 20)
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitle(NSLocalizedString("LOAD_BUTTON_TITLE", comment: ""), for: .normal)
+        button.setTitle(NSLocalizedString("LOAD_BUTTON_TITLE_RESPONSE", comment: ""), for: .normal)
         button.titleLabel?.font = font
         button.backgroundColor = #colorLiteral(red: 0.1294117647, green: 0.1294117647, blue: 0.1411764706, alpha: 0.5)
         button.setTitleColor(#colorLiteral(red: 1.0, green: 1.0, blue: 1.0, alpha: 1.0), for: .normal)
@@ -27,6 +29,7 @@ class ViewController: UIViewController {
         button.layer.shadowColor = #colorLiteral(red: 0.1294117647, green: 0.1294117647, blue: 0.1411764706, alpha: 1)
         button.layer.shadowOpacity = 0.9
         button.layer.shadowRadius = 10
+        button.tag = 1
         return button
     }()
 
@@ -67,8 +70,9 @@ class ViewController: UIViewController {
         super.viewDidLoad()
         viewModel = ViewModel()
         setupViews()
-        viewModel.fetchWebContent("", false)
-//        showPrintedResultsOnTextView()
+//        viewModel.fetchWebContent("", false)
+        fetchWebData()
+        showPrintedResultsOnTextView()
         showResponseOnTextView()
     }
 
@@ -102,7 +106,7 @@ class ViewController: UIViewController {
             button.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20),
             button.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20),
             button.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -12),
-            //Constraints for TextView
+            //Constraints for TextViewContainer
             textViewContainer.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 25),
             textViewContainer.leftAnchor.constraint(equalTo: button.leftAnchor),
             textViewContainer.rightAnchor.constraint(equalTo: button.rightAnchor),
@@ -113,32 +117,52 @@ class ViewController: UIViewController {
 
 
     @objc fileprivate func loadButtonAction(){
+        if self.button.tag == 1 {
+            self.textView.attributedText = dataSource.response
+        } else {
+            self.textView.text = dataSource.result
+        }
+
+
+
+
+
+
+
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.fetchWebData), object: self)//Canceling previous request when frequently button press occurring within 1 second
-        perform(#selector(self.fetchWebData), with: self, afterDelay: 1.0)//Delaying 1 sec
+        perform(#selector(self.fetchWebData), with: self, afterDelay: 1.2)//Delaying 1.2 sec
     }
 
     @objc fileprivate func fetchWebData(){
-        status.onInitialLoad = false
+//        status.onInitialLoad = false
+
         let webUrl = "https://www.bioscopelive.com/en/disclaimer"
-        viewModel.fetchWebContent(webUrl, true)
+//        let showConsole = (self.button.tag == 1) ? true : false
+
+        viewModel.fetchWebContent(webUrl, dataSource.onInitialLoad)
+        dataSource.onInitialLoad = false
     }
 
     fileprivate func showPrintedResultsOnTextView(){
-        status.showWebContent = false
-        viewModel.lastCharacterAndEvery10thCharacters = { lastCharacter, every10thCharacters in
+        viewModel.lastCharacterAndEvery10thCharacters = {[weak self] lastCharacter, every10thCharacters in
+            guard let self = self else { return }
             DispatchQueue.main.async {
                 let answerOne = "Question 1 Solution:\n \(lastCharacter)"
                 let answerTwo = "\n Question 2 Solution:\n \(every10thCharacters)"
 
-                self.textView.text = answerOne + answerTwo
+                self.dataSource.result = answerOne + answerTwo
+//                self.textView.text = answerOne + answerTwo
             }
         }
 
-        viewModel.wordCountsInString = { wordCounts in
+        viewModel.wordCountsInString = {[weak self] wordCounts in
+            guard let self = self else { return }
             DispatchQueue.main.async {
                 let answerThree = "\n Question 3 Solution:\n \(wordCounts)"
-                let updatedString = self.textView.text + answerThree
-                self.textView.text = updatedString
+                let updatedString = self.dataSource.result + answerThree
+
+                self.dataSource.result = updatedString
+//                self.textView.text = updatedString
             }
         }
     }
@@ -146,9 +170,16 @@ class ViewController: UIViewController {
     func showResponseOnTextView() {
         viewModel.allResponseFromWebUrl = {[weak self] content in
             guard let self = self else { return }
-            if self.status.onInitialLoad || !self.status.showWebContent { return }
+
             DispatchQueue.main.async {
+                self.dataSource.response = content
                 self.textView.attributedText = content
+
+
+                self.button.tag = self.button.tag == 1 ? 0 : 1
+                let title = self.button.tag == 1 ? NSLocalizedString("LOAD_BUTTON_TITLE_RESPONSE", comment: "") : NSLocalizedString("LOAD_BUTTON_TITLE_RESULT", comment: "")
+
+                self.button.setTitle(title, for: .normal)
             }
         }
     }

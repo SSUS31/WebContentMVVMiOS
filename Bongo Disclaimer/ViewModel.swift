@@ -16,10 +16,10 @@ protocol ViewModelDelegate {
     This function will fetch data from web url
     - parameter urlString:The link where to grab data
     */
-    func fetchWebContent(_ urlString:String, _ onlyResult:Bool)
+    func fetchWebContent(_ urlString: String, _ showConsole: Bool)
 }
 
-struct ViewModel:ViewModelDelegate {
+class ViewModel:ViewModelDelegate {
     var allResponseFromWebUrl: (NSAttributedString) -> Void = { _ in }
     var lastCharacterAndEvery10thCharacters: (Character, String) -> Void = { _,_ in }
     var wordCountsInString: (String) -> Void = { _ in }
@@ -36,11 +36,11 @@ struct ViewModel:ViewModelDelegate {
     This function will fetch data from web url
     - parameter urlString:The link where to grab data
     */
-    func fetchWebContent(_ urlString: String = "", _ onlyResult:Bool = false) {
+    func fetchWebContent(_ urlString: String = "", _ showConsole:Bool = false) {
         let url = urlString.isEmpty ? webUrl : urlString
 
         networkManager.getString(from: url) {(content) in
-            if onlyResult {
+            if !showConsole {
                 self.allResponseFromWebUrl(content)
                 return
             }
@@ -53,7 +53,7 @@ struct ViewModel:ViewModelDelegate {
                 //MARK:- Printing every 10th character separated by space
                 print(every10thCharacters)
                 self.lastCharacterAndEvery10thCharacters(lastCharacter,every10thCharacters)
-                self.allResponseFromWebUrl(content)
+//                self.allResponseFromWebUrl(content)
             }
             DispatchQueue.global(qos: .background).async {
                 self.wordCounts(_string: stringValue)
@@ -72,7 +72,6 @@ struct ViewModel:ViewModelDelegate {
             if word.count > 0 {
                 wordCounts += " \(word.count)"
             }
-
         }
          //MARK:- Printing  the count of every word.
         print(wordCounts)
