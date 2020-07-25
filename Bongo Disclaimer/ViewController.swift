@@ -61,6 +61,7 @@ class ViewController: UIViewController {
         textView.backgroundColor = #colorLiteral(red: 0.9803921569, green: 0.9803921569, blue: 0.9803921569, alpha: 1)
         textView.isEditable = false
         textView.layer.cornerRadius = 30
+        textView.textContainerInset.top = 20
         return textView
     }()
 
@@ -79,20 +80,7 @@ class ViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
-        UIView.animate(withDuration: 1.2, delay: 0.3, usingSpringWithDamping: 0.5, initialSpringVelocity: 5, options: .curveEaseInOut, animations: {
-            self.textViewContainer.alpha = 1
-            self.textViewContainer.transform = .identity
-
-        }, completion: { success in
-            if success {
-                UIView.animate(withDuration: 0.3) {
-                    self.button.layer.cornerRadius = 25
-                    self.button.backgroundColor = #colorLiteral(red: 0.1294117647, green: 0.1294117647, blue: 0.1411764706, alpha: 1)
-                }
-            }
-        })
-
-
+        appearanceAnimationOfViews()
     }
 
     //MARK:- Setup Views
@@ -114,59 +102,77 @@ class ViewController: UIViewController {
         ])
     }
 
+    //MARK: Animations
+    fileprivate func appearanceAnimationOfViews() {
+        UIView.animate(withDuration: 1.2, delay: 0.3, usingSpringWithDamping: 0.5, initialSpringVelocity: 5, options: .curveEaseInOut, animations: {
+            self.textViewContainer.alpha = 1
+            self.textViewContainer.transform = .identity
+
+        }, completion: { success in
+            if success {
+                UIView.animate(withDuration: 0.3) {
+                    self.button.layer.cornerRadius = 25
+                    self.button.backgroundColor = #colorLiteral(red: 0.1294117647, green: 0.1294117647, blue: 0.1411764706, alpha: 1)
+                }
+            }
+        })
+    }
 
 
+    //MARK: Button Action
     @objc fileprivate func loadButtonAction(){
         if self.button.tag == 1 {
             self.textView.attributedText = dataSource.response
         } else {
             self.textView.text = dataSource.result
+            toggleButtonTitle()
+
+            return
         }
-
-
-
-
-
-
 
         NSObject.cancelPreviousPerformRequests(withTarget: self, selector: #selector(self.fetchWebData), object: self)//Canceling previous request when frequently button press occurring within 1 second
         perform(#selector(self.fetchWebData), with: self, afterDelay: 1.2)//Delaying 1.2 sec
     }
 
+    //MARK:- API calling by ViewModel
     @objc fileprivate func fetchWebData(){
-//        status.onInitialLoad = false
-
         let webUrl = "https://www.bioscopelive.com/en/disclaimer"
-//        let showConsole = (self.button.tag == 1) ? true : false
-
         viewModel.fetchWebContent(webUrl, dataSource.onInitialLoad)
         dataSource.onInitialLoad = false
     }
 
+    //MARK:- Showing calculated result in UITextView
     fileprivate func showPrintedResultsOnTextView(){
         viewModel.lastCharacterAndEvery10thCharacters = {[weak self] lastCharacter, every10thCharacters in
             guard let self = self else { return }
             DispatchQueue.main.async {
-                let answerOne = "Question 1 Solution:\n \(lastCharacter)"
-                let answerTwo = "\n Question 2 Solution:\n \(every10thCharacters)"
+                let answerOne = "Printing the last character:\n \(lastCharacter)"
+                let answerTwo = "\n Printing every 10th character:\n \(every10thCharacters)"
 
                 self.dataSource.result = answerOne + answerTwo
-//                self.textView.text = answerOne + answerTwo
             }
         }
 
         viewModel.wordCountsInString = {[weak self] wordCounts in
             guard let self = self else { return }
             DispatchQueue.main.async {
-                let answerThree = "\n Question 3 Solution:\n \(wordCounts)"
+                let answerThree = "\n Printing the count of every word:\n \(wordCounts)"
                 let updatedString = self.dataSource.result + answerThree
 
                 self.dataSource.result = updatedString
-//                self.textView.text = updatedString
             }
         }
     }
 
+    //MARK:- Toggling button title
+    fileprivate func toggleButtonTitle() {
+        self.button.tag = self.button.tag == 1 ? 0 : 1
+        let title = self.button.tag == 1 ? NSLocalizedString("LOAD_BUTTON_TITLE_RESPONSE", comment: "") : NSLocalizedString("LOAD_BUTTON_TITLE_RESULT", comment: "")
+
+        self.button.setTitle(title, for: .normal)
+    }
+
+    //MARK:- Showing web response in UITextView
     func showResponseOnTextView() {
         viewModel.allResponseFromWebUrl = {[weak self] content in
             guard let self = self else { return }
@@ -175,11 +181,7 @@ class ViewController: UIViewController {
                 self.dataSource.response = content
                 self.textView.attributedText = content
 
-
-                self.button.tag = self.button.tag == 1 ? 0 : 1
-                let title = self.button.tag == 1 ? NSLocalizedString("LOAD_BUTTON_TITLE_RESPONSE", comment: "") : NSLocalizedString("LOAD_BUTTON_TITLE_RESULT", comment: "")
-
-                self.button.setTitle(title, for: .normal)
+                self.toggleButtonTitle()
             }
         }
     }
